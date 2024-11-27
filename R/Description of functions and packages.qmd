@@ -1,0 +1,124 @@
+---
+title: "Description packages and functions used for tree biomass calculations"
+author: "MarteF"
+format: html
+editor: visual
+---
+
+```{r}
+# install.packages("sitreeE")
+# install.packages("sitree")
+# install.packages("gt")
+
+library(sitree)
+library(sitreeE)
+library(gt)
+```
+
+## Introduction to packages used
+
+For this calculation we have used the packages "sitree" and "sitreeE" developed by Clara Anton Fernandez.
+
+Citation: Anton Fernandez C (2021). \_sitreeE: Sitree Extensions\_. R package version 0.0-8, \<https://CRAN.R-project.org/package=sitreeE\>.
+
+In these package we find functions to calculate above- and belowground biomass of certain nordic trees like spruce, pine and birch, based on known biomass equations.
+
+The **sitree** package provides a framework to implement Single Tree forest growth models in a fast and memory efficient way. It keep tracks of all alive, dead, and removed trees in a robust and efficient way. **SiTree** is designed to run single tree simulations where trees can be defined by two time-dependent variables (such as diameter (or basal area), and height), and on time-independent variable, such as tree species. **SiTree** simulates birth, growth, and death of trees as well as management. Functions can also be defined that affect characteristics of the stand (external modifiers), such as climate change, or fertilization.
+
+SitreeE provides extensions for package 'sitree' for allometric variables, growth, mortality, recruitment, management, tree removal and external modifiers functions.
+
+It supports the simulation of different management interventions and their effects on forest growth and development.
+
+Two types of input are required by **SiTree**: tree level and stand level. Tree level information is passed in `tree.df`, while stand level information is passed in `stand.df`.
+
+`tree.df` should be a data frame with four columns named `plot.id`, `treeid`, `dbh`, `height`, and `tree.sp`, which correspond to a stand/plot ID, a tree ID, diameter, height, and tree species.
+
+Plot and stand data is passed in `stand.df`, which should be a data frame or a list, with at least a column or element named `plot.id` which should contain all the plot IDs present in `tree.df`. Typical information provided in `stand.df` are plot size, elevation, site index, plot coordinates, distance to road, temperature or precipitation.
+
+e.g.
+
+```{r}
+
+# Example data
+data <- data.frame(
+  plot.id = c(91, 91, 91, 91, 91, 91),
+  treeid = c(108286, 137120, 108287, 108268, 137124, 108271),
+  dbh = c(149, 133, 55, 235, 187, 162),
+  height = c(118, 107, 52, 151, 137, 124),
+  tree.sp = c(53, 53, 53, 49, 53, 49)
+)
+
+# Create a formatted table
+data %>%
+  gt() %>%
+  tab_header(
+    title = "Tree Data Table",
+    subtitle = "Example of tree measurements"
+  )
+```
+
+### Marklund’s biomass equations
+
+biomass.spruce.M1988(dbh.cm, H.m)
+
+biomass.pine.M1988(dbh.cm, H.m)
+
+biomass.birch.M1988(dbh.cm, H.m)
+
+Arguments dbh.cm is a vector with the dbh (diameter at breast height) of the trees, in cm.
+
+H.m is a vector with the heights of the trees, in meters.
+
+It returns a data.frame with the following biomass components in kg: living.branches, dead.branches, stem.wood, stump.roots, bark, usoil, rot1, rot2, and foliage.
+
+References Marklund, L. G. 1988. “Biomassafunktioner för tall, gran och björk i Sverige \[Biomass functions for pine, spruce and birch in Sweden\].” Report 45. Umeå, Sweden: Swedish University of Agricultural Sciences. Department of Forest Survey. Petersson, Hans, and Göran Ståhl. 2006. “Functions for Below-Ground Biomass of Pinus Sylvestris, Picea Abies, Betula Pendula and Betula Pubescens in Sweden.” Scandinavian Journal of Forest Research 21 (S7): 84–93.
+
+### biomass functions for birch for Norway from Smith et al (2014, 2016)
+
+biomass.birch.S2014
+
+Returns a data.frame with the following biomass components: biomass.total.kg, biomass.aboveground.kg.S2014, biomass.belowground.kg.S2014, biomass.belowground.kg, biomass.aboveground.kg, living.branches, dead.branches, stem.wood, stump.roots, bark, usoil, rot1, rot2, foliage)
+
+It uses stump.roots from biomass.birch.M1988 to calculate aboveground biomass (in kg) and belowground biomass (in kg). Aboveground biomass is calculated as Smith’s aboveground biomass (2014) + stump.roots. Belowground biomass is calcualted as Smith’s belowground biomass (2016) - stump.roots.
+
+References Smith, Aaron, Aksel Granhus, and Rasmus Astrup. 2016. “Functions for Estimating Belowground and Whole Tree Biomass of Birch in Norway.” Scandinavian Journal of Forest Research 31 (6): 568–82. <https://doi.org/10.1080/02827581.2016.1141232> Smith, Aaron, Aksel Granhus, Rasmus Astrup, Ole Martin Bollandsås, and Hans Petersson. 2014. “Functions for Estimating Aboveground Biomass of Birch in Norway.” Scandinavian Journal of Forest Research 29 (6): 565–78. <http://dx.doi.org/10.1080/02827581.2014.951389>
+
+### The Norwegian biomass equation
+
+biomass.norway.sitree(dbh.mm, height.dm, tree.sp)
+
+Arguments:
+
+dbh.mm - Diameter at breast height in mm.
+
+height.dm - Tree height in dm.
+
+tree.sp Tree species according to the Norwegian NFI.
+
+It will use biomass.spruce.M1988 when tree.sp is 1, 2, 3, 21, or 29, biomass.pine.M1988 when tree.sp is 10, 11, or 20, and biomass.birch.S2014 otherwise.
+
+## Tree species codes 
+
+-   **Norway Spruce (*Picea abies*)**: Code 1
+
+-   **Scots Pine (*Pinus sylvestris*)**: Code 10
+
+-   **Birch species (*Betula spp.*)**: Code 30
+
+-   
+
+## Example
+
+```{r}
+bio.nor <- biomass.norway.sitree (dbh.mm = c(50, 60, 100 ), height.dm = c(40, 60,
+                                                                          80),
+                                  tree.sp = c(1, 10, 30))
+
+
+
+
+```
+
+```{r}
+data(tr)
+```
