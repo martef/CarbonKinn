@@ -1,0 +1,43 @@
+---
+title: "Calculating biomass"
+author: "MarteF"
+format: html
+editor: visual
+---
+
+```{r}
+library(sitree)
+library(sitreeE)
+library(readxl)
+library(tidyverse)
+```
+
+```{r}
+biomass_data <- read_excel("../Data/biomassedata_Kinn.xlsx")
+```
+
+```{r}
+bio.kinn <- biomass.norway.sitree (dbh.mm = biomass_data$dbh.mm, 
+                                   height.dm = biomass_data$height.dm,
+                                  tree.sp = biomass_data$tree.sp)
+
+write.csv(bio.kinn, "../Data/bio.kinn.csv")
+```
+
+```{r}
+biomass_data <- read_excel("../Data/biomassedata_Malvik.xlsx")
+```
+
+```{r}
+bio.malvik <- biomass.norway.sitree (dbh.mm = biomass_data$dbh.mm, 
+                                   height.dm = biomass_data$height.dm,
+                                  tree.sp = biomass_data$tree.sp)
+
+#Slå sammen datasettene rad for rad
+biomasse.malvik <- bind_cols(biomass_data, bio.malvik)
+
+# Se på resultatet
+head(biomasse.malvik)
+
+write.csv(biomasse.malvik, "../Data/bio.malvik.csv")
+```
