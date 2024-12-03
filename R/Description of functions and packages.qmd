@@ -97,7 +97,7 @@ tree.sp Tree species according to the Norwegian NFI.
 
 It will use biomass.spruce.M1988 when tree.sp is 1, 2, 3, 21, or 29, biomass.pine.M1988 when tree.sp is 10, 11, or 20, and biomass.birch.S2014 otherwise.
 
-## Tree species codes 
+## Tree species codes
 
 -   **Norway Spruce (*Picea abies*)**: Code 1
 

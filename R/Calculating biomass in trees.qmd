@@ -12,6 +12,8 @@ library(readxl)
 library(tidyverse)
 ```
 
+## Calculate biomass in trees in Kinn
+
 ```{r}
 biomass_data <- read_excel("../Data/biomassedata_Kinn.xlsx")
 ```
@@ -23,6 +25,8 @@ bio.kinn <- biomass.norway.sitree (dbh.mm = biomass_data$dbh.mm,
 
 write.csv(bio.kinn, "../Data/bio.kinn.csv")
 ```
+
+## Calculate biomass in trees in Malvik
 
 ```{r}
 biomass_data <- read_excel("../Data/biomassedata_Malvik.xlsx")
@@ -40,4 +44,36 @@ biomasse.malvik <- bind_cols(biomass_data, bio.malvik)
 head(biomasse.malvik)
 
 write.csv(biomasse.malvik, "../Data/bio.malvik.csv")
+```
+
+### Summary statistics
+
+```{r}
+
+# Beregn oppsummeringsstatistikk for biomasse.malvik
+summary_stats <- biomasse.malvik %>%
+  group_by(Lokalitet) %>%
+  summarise(
+    mean_height = mean(`Hoyde(m)`, na.rm = TRUE),
+    mean_dbh = mean(`DBH(cm)`, na.rm = TRUE),
+    n_trees = max(Trenr, na.rm = TRUE),
+    sum_living_branches = sum(living.branches, na.rm = TRUE),
+    sum_dead_branches = sum(dead.branches, na.rm = TRUE),
+    sum_stem_wood = sum(stem.wood, na.rm = TRUE),
+    sum_stump = sum(stump, na.rm = TRUE),
+    sum_bark = sum(bark, na.rm = TRUE),
+    sum_usoil = sum(usoil, na.rm = TRUE),
+    sum_rot1 = sum(rot1, na.rm = TRUE),
+    sum_rot2 = sum(rot2, na.rm = TRUE),
+    sum_foliage = sum(foliage, na.rm = TRUE),
+    sum_biomass_aboveground = sum(biomass.aboveground.kg, na.rm = TRUE),
+    sum_biomass_belowground = sum(biomass.belowground.kg, na.rm = TRUE),
+    sum_total_biomass = sum(total.biomass.kg, na.rm = TRUE)
+  )
+
+# Se på resultatet
+summary_stats
+
+write.csv(summary_stats, file="../Output/summary.stats.malvik.csv")
+
 ```
